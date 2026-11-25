@@ -356,6 +356,7 @@ footer{font-size:12px;color:var(--muted)}
 @keyframes spinR{0%{transform:rotateY(180deg) scale(.7);opacity:0}50%{opacity:1}80%{transform:rotateY(-12deg) scale(1.04)}100%{transform:rotateY(0) scale(1)}}
 </style>
 
+<script data-goatcounter="https://hani3mara.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 <div class="app">
@@ -619,7 +620,9 @@ function mchips(){
   const on=$("#mchips .mc.on");if(on)on.scrollIntoView({block:"nearest",inline:"center"});
 }
 function render(){map();rail();grid();mchips()}
+function gcEv(path,title){try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:path,title:title,event:true})}catch(_){}}
 function open(id){
+  {const _p=P.find(x=>x.id===id);if(_p)gcEv("product/"+id,_p.n)}
   const list=shown.some(p=>p.id===id)?shown:P;cur=list.findIndex(p=>p.id===id);const p=list[cur];
   document.querySelectorAll(".pi").forEach(b=>b.classList.toggle("on",b.dataset.id===id));
   $("#sheet").innerHTML=`<div class="shead" style="--pb:${BG[p.img]||'#eef1f5'}">${vis(p)}${discBadge(p)}<button class="x" id="x" aria-label="Close">×</button><button class="favb ${isFav(p.id)?"on":""}" id="favb" aria-label="Add to favorites">★</button><span class="swhint">${cur+1} / ${list.length} · swipe ⇆</span></div>
@@ -652,7 +655,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("#clear")){clearAll();return}
   if(e.target.closest("#back")||e.target.closest("#fab")){$("#map").scrollIntoView({behavior:"smooth",block:"center"});return}
   const x=e.target.closest("[data-x]");if(x){if(x.dataset.x==="cat")cat="all";else{q="";$("#q").value=""}render();return}
-  const c=e.target.closest("[data-c]");if(c){const id=c.dataset.c,isH=c.classList.contains("gh"),same=isH&&OG.has(id)&&cat===id;if(same)OG.delete(id);else{OG.add(id);cat=id}render();try{localStorage.setItem("cat",cat)}catch(_){};if(!same&&(c.dataset.jump||c.classList.contains("box"))){$("#rail").classList.remove("open");if(!$("#sheet").classList.contains("on"))$("#scrim").classList.remove("on");$("#gridsec").scrollIntoView({behavior:"smooth"})}return}
+  const c=e.target.closest("[data-c]");if(c){const id=c.dataset.c;gcEv("specialty/"+id,id==="all"?"All Products":(catOf(id)||[0,id])[1]),isH=c.classList.contains("gh"),same=isH&&OG.has(id)&&cat===id;if(same)OG.delete(id);else{OG.add(id);cat=id}render();try{localStorage.setItem("cat",cat)}catch(_){};if(!same&&(c.dataset.jump||c.classList.contains("box"))){$("#rail").classList.remove("open");if(!$("#sheet").classList.contains("on"))$("#scrim").classList.remove("on");$("#gridsec").scrollIntoView({behavior:"smooth"})}return}
   const p=e.target.closest("[data-id]");if(p)open(p.dataset.id);
 });
 $("#q").addEventListener("input",e=>{q=e.target.value;$("#mq").value=q;rail();grid()});
@@ -696,7 +699,7 @@ function mRender(){
   $("#fcount").hidden=!FAV.length;$("#fcount").textContent=FAV.length;
   window.__mlists={list:mlist,search:sres,fav:fl};
 }
-function mGo(v,c){mv=v;if(c)mcat=c;["home","list","search","fav"].forEach(x=>$("#v-"+x).hidden=x!==v);
+function mGo(v,c){mv=v;if(c)mcat=c;if(v==="list"&&c)gcEv("specialty/"+c,c==="all"?"All Products":catOf(c)[1]);if(v==="search"||v==="fav")gcEv("screen/"+v,v);["home","list","search","fav"].forEach(x=>$("#v-"+x).hidden=x!==v);
   document.querySelectorAll(".mnav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v||(v==="list"&&b.dataset.v==="home")));
   $("#mback").hidden=v!=="list";$("#mtitle").textContent=v==="home"?"Doctor Catalog":v==="list"?(mcat==="all"?"All Products":catOf(mcat)[1]):v==="search"?"Search":"Favorites";
   mRender();scrollTo(0,0);const vv=$("#v-"+v);vv.classList.remove("enter");void vv.offsetWidth;vv.classList.add("enter");if(v==="search")setTimeout(()=>$("#sq").focus(),50)}
